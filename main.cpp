@@ -13,14 +13,16 @@
 #include "forest.h"
 
 
-int main()
+int main(int args, char * argv[])
 {
-	forest *myForest = new forest();
+	double forest_dimension = atof(argv[1]);
+	double root_distance = atof(argv[2]);
+	Forest *myForest = new Forest(forest_dimension, root_distance);
 
 
-	myForest->grow_forest();
+	myForest->grow_Forest();
 
-	myForest->iginte_forest();
+	myForest->iginte_Forest();
 
 
 	return 0;
