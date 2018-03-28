@@ -15,14 +15,15 @@
 
 int main(int args, char * argv[])
 {
-	double forest_dimension = atof(argv[1]);
-	double root_distance = atof(argv[2]);
-	Forest *myForest = new Forest(forest_dimension, root_distance);
+
+	Forest *myForest = new Forest;
 
 
-	myForest->grow_Forest();
-
+	for(double tree_prob = 0.05; tree_prob<=1; tree_prob=tree_prob+0.05)
+	{
+	myForest->grow_Forest(tree_prob);
 	myForest->iginte_Forest();
+	}
 
 
 	return 0;

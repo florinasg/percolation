@@ -9,15 +9,16 @@
 #include <stdlib.h>
 #include <random>
 #include <vector>
+#include <fstream>
+
+#define FOREST_L 1000
 
 #ifndef FOREST_H_
 #define FOREST_H_
 
-enum tree_stat {green, burning, burnedDown};
+enum tree_stat {none, green, burning, burnedDown};
 
 typedef struct{
-	double X;
-	double Y;
 bool tree;
 tree_stat Tree_Stat;
 int ignitionTime;
@@ -26,25 +27,26 @@ int ignitionTime;
 
 class Forest {
 public:
-	Forest(double Forest_Dimension, double Root_Distance);
+	Forest();
 	virtual ~Forest();
 
 	int iginte_Forest();
-	int grow_Forest();
+	int grow_Forest(double new_tree_prob);
 
-	int export_Forest();
+	int export_Forest(int mode);
 
 
 private:
 
-	/*L*/
-	double forest_dimension;
-	/*has to be a divident of forest_dimesion*/
-	double root_distance;
-	/*defines number of rootplaces per row of length L*/
+	double tree_prob;
+
+	const int forest_dimension = FOREST_L;
+
 	int root_row;
 	/*defines forest*/
-	std::vector<root> forest;
+	root forest[FOREST_L][FOREST_L];
+
+	int time_step;
 };
 
 #endif /* FOREST_H_ */
