@@ -16,13 +16,13 @@
 int main(int args, char * argv[])
 {
 
-	Forest *myForest = new Forest;
-
 
 	for(double tree_prob = 0.05; tree_prob<=1; tree_prob=tree_prob+0.05)
 	{
-	myForest->grow_Forest(tree_prob);
-	myForest->iginte_Forest();
+		Forest *myForest = new Forest;
+		myForest->grow_Forest(tree_prob);
+		myForest->iginte_Forest();
+		delete myForest;
 	}
 
 

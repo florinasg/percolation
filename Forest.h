@@ -42,6 +42,12 @@ private:
 
 	const int forest_dimension = FOREST_L;
 
+	double number_of_trees;
+
+	double number_of_unburnt_trees;
+
+	double p;
+
 	int root_row;
 	/*defines forest*/
 	root forest[FOREST_L][FOREST_L];
