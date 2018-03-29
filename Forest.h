@@ -44,7 +44,7 @@ private:
 
 	double number_of_trees;
 
-	double number_of_unburnt_trees;
+	double number_of_burnt_trees;
 
 	double p;
 

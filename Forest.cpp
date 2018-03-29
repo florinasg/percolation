@@ -45,8 +45,8 @@ int Forest::grow_Forest(double new_tree_prob)
 	/*random number generator TODO: TEST!!*/
 	std::default_random_engine generator;
 	generator.seed(time(NULL));
-	std::uniform_int_distribution<int> distribution(0,1);
-	int tree_or_not = 0;
+	std::uniform_real_distribution<double> distribution(0,1);
+	double tree_or_not = 0;
 
 	for(int idx = 0; idx < forest_dimension; idx++)
 	{
@@ -59,7 +59,7 @@ int Forest::grow_Forest(double new_tree_prob)
 				forest[idx][jdx].tree = true;
 				forest[idx][jdx].Tree_Stat = green;
 				number_of_trees++;
-				number_of_unburnt_trees++;
+
 			}
 		}
 	}
@@ -153,11 +153,11 @@ int Forest::iginte_Forest()
 					}
 				}
 
-				if(forest[idx][jdx].ignitionTime == (time_step-1))
+				if(forest[idx][jdx].tree &&forest[idx][jdx].Tree_Stat == burning &&forest[idx][jdx].ignitionTime == (time_step-1))
 				{
 					forest[idx][jdx].Tree_Stat = burnedDown;
 					number_burning_trees --;
-					number_of_unburnt_trees --;
+					number_of_burnt_trees++;
 				}
 			}
 
@@ -172,36 +172,37 @@ int Forest::iginte_Forest()
 			jdx_T = jdx+1;
 			if(jdx==forest_dimension-1)
 				jdx_T = 0;
-			if(forest[idx][jdx].Tree_Stat == burning)
+			if(forest[forest_dimension-1][jdx].Tree_Stat == burning)
 			{
-				if(forest[forest_dimension][jdx_T].tree && forest[forest_dimension][jdx_T].Tree_Stat == green)
+				if(forest[forest_dimension-1][jdx_T].tree && (forest[forest_dimension-1][jdx_T].Tree_Stat == green))
 				{
-					forest[forest_dimension][jdx_T].Tree_Stat = burning;
-					forest[forest_dimension][jdx_T].ignitionTime = time_step;
+					forest[forest_dimension-1][jdx_T].Tree_Stat = burning;
+					forest[forest_dimension-1][jdx_T].ignitionTime = time_step;
 					number_burning_trees++;
 
 				}
 			}
-			else if(forest[idx][jdx].Tree_Stat == green)
+			else if(forest[forest_dimension-1][jdx].Tree_Stat == green)
 			{
-				if(forest[idx][jdx_T].tree && forest[idx][jdx_T].Tree_Stat == burning)
+				if(forest[forest_dimension-1][jdx_T].tree && forest[forest_dimension-1][jdx_T].Tree_Stat == burning)
 				{
-					forest[idx][jdx].Tree_Stat = burning;
-					forest[idx][jdx].ignitionTime = time_step;
+					forest[forest_dimension-1][jdx].Tree_Stat = burning;
+					forest[forest_dimension-1][jdx].ignitionTime = time_step;
 					number_burning_trees++;
 				}
 			}
 
-			if(forest[idx][jdx].ignitionTime == (time_step-1))
+			if(forest[forest_dimension-1][jdx].tree &&forest[forest_dimension-1][jdx].Tree_Stat == burning&& forest[forest_dimension-1][jdx].ignitionTime == (time_step-1))
 			{
-				forest[idx][jdx].Tree_Stat = burnedDown;
+
+				forest[forest_dimension-1][jdx].Tree_Stat = burnedDown;
 				number_burning_trees --;
-				number_of_unburnt_trees--;
+				number_of_burnt_trees++;
 			}
 
 		}
 
-		this->export_Forest(2);
+	//	this->export_Forest(2);
 		/*increases time step*/
 		time_step = time_step +1;
 
@@ -210,9 +211,9 @@ int Forest::iginte_Forest()
 
 	this->export_Forest(0);
 
-	double p_fract = number_of_unburnt_trees/number_of_trees;
+	double p_fract = number_of_burnt_trees/number_of_trees;
 
-	std::cout << "Probability: " << tree_prob << "-> p: " << std::to_string(p_fract) << std::endl;
+	std::cout << "Probability: " << tree_prob << "-> p: " << std::to_string(p_fract) << " Extincion_time: " << std::to_string(time_step)<<std::endl;
 
 	return 0;
 }
@@ -236,7 +237,7 @@ int Forest::export_Forest(int mode)
 					if(forest[idx][jdx].Tree_Stat == green)
 						forest_file << "1" << ",";
 					else if(forest[idx][jdx].Tree_Stat == burnedDown )
-						forest_file << "0" << ",";
+						forest_file << "XXX" << ",";
 
 				}
 				else
