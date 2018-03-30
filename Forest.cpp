@@ -18,12 +18,25 @@
 Forest::Forest(int dimension) :  forest_dimension(dimension),root_row(0), time_step(0)
 {
 
-	/*IMPORTANT*/
+	/*IMPORTANT INITIALIZATIONS*/
 	time_step = 1;
 
 	p_fract = 0;
 
 	extinction_time = 0;
+
+
+
+
+
+}
+
+Forest::~Forest() {
+
+}
+
+int Forest::grow_Forest(double new_tree_prob)
+{
 
 
 	/*standard way to create 2dim array with new*/
@@ -41,16 +54,6 @@ Forest::Forest(int dimension) :  forest_dimension(dimension),root_row(0), time_s
 
 		}
 	}
-
-
-}
-
-Forest::~Forest() {
-
-}
-
-int Forest::grow_Forest(double new_tree_prob)
-{
 
 	tree_prob = new_tree_prob;
 
@@ -88,15 +91,13 @@ int Forest::iginte_Forest()
 	int jdx = 0;
 	int jdx_T;
 
-	/*running monte_carlo index*/
-	int monte_carlo;
+
 
 	/*keeps track of burning trees*/
 	int number_burning_trees = 0;
 
 	/*MONTE CARLO LOOP*/
-	for(monte_carlo  = 0; monte_carlo <= forest_dimension+1; monte_carlo++)
-	{
+
 
 		/*ignite first row of forest */
 		for(jdx = 0; jdx<forest_dimension; jdx++)
@@ -236,12 +237,16 @@ int Forest::iginte_Forest()
 		/*writes burned forest to file*/
 		//this->export_Forest(0);
 
-		extinction_time = extinction_time +time_step;
-		p_fract = p_fract + number_of_burnt_trees/number_of_trees;
+		extinction_time = extinction_time +time_step/(forest_dimension+1);
+		p_fract = p_fract + (number_of_burnt_trees/number_of_trees)/(forest_dimension+1);
+
+
+
+	for(int i = 0; i < forest_dimension; ++i) {
+	    delete [] forest[i];
 	}
-	/*writes plot data to file*/
-	this->export_Forest(3);
-	std::cout << "Probability (MONTE CARLO): " << tree_prob << "-> p: " << std::to_string(p_fract/monte_carlo) << " Extincion_time (MONTE CARLO): " << std::to_string(time_step/monte_carlo)<<std::endl;
+	delete [] forest;
+
 
 	return 0;
 }
@@ -321,7 +326,7 @@ int Forest::export_Forest(int mode)
 	else if(mode == 3)
 	{
 		forest_file.open("p_rho_extT_"+std::to_string(forest_dimension)+".csv",std::fstream::app);
-		forest_file<<tree_prob<<","<<p_fract/(forest_dimension+1)<<","<<extinction_time/(forest_dimension+1)<<"\n";
+		forest_file<<tree_prob<<","<<p_fract<<","<<extinction_time<<"\n";
 	}
 
 	forest_file.close();

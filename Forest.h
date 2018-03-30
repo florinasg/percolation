@@ -36,7 +36,6 @@ public:
 	int export_Forest(int mode);
 
 
-private:
 
 	double tree_prob;
 

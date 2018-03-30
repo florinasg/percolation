@@ -11,6 +11,7 @@
 #include <random>
 #include <vector>
 #include "forest.h"
+#include <iostream>
 
 
 #define FOREST_L 1000
@@ -18,14 +19,22 @@
 int main(int args, char * argv[])
 {
 
+
 	if(atoi(argv[1])==0)
 	{
 		for(double tree_prob = 0.01; tree_prob<=1.00; tree_prob=tree_prob+0.01)
 		{
 
 			Forest *myForest = new Forest(FOREST_L);
-			myForest->grow_Forest(tree_prob);
-			myForest->iginte_Forest();
+			for(int monte_carlo  = 0; monte_carlo <= FOREST_L+1; monte_carlo++)
+			{
+				myForest->grow_Forest(tree_prob);
+				myForest->iginte_Forest();
+
+			}
+			std::cout << "Probability (Monte Carlo): " << tree_prob << "-> p: " << std::to_string(myForest->p_fract) << " Extincion_time (Monte Carlo): " << std::to_string(myForest->time_step)<<std::endl;
+
+			myForest->export_Forest(3);
 			delete myForest;
 
 		}
