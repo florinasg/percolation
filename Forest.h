@@ -11,7 +11,7 @@
 #include <vector>
 #include <fstream>
 
-#define FOREST_L 1000
+
 
 #ifndef FOREST_H_
 #define FOREST_H_
@@ -27,7 +27,7 @@ int ignitionTime;
 
 class Forest {
 public:
-	Forest();
+	Forest(int dimension);
 	virtual ~Forest();
 
 	int iginte_Forest();
@@ -40,7 +40,11 @@ private:
 
 	double tree_prob;
 
-	const int forest_dimension = FOREST_L;
+	/*burnt trees/number of all trees*/
+	double p_fract;
+	int extinction_time;
+
+	int forest_dimension;
 
 	double number_of_trees;
 
@@ -50,7 +54,7 @@ private:
 
 	int root_row;
 	/*defines forest*/
-	root forest[FOREST_L][FOREST_L];
+	root **forest;
 
 	int time_step;
 };
