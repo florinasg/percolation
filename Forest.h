@@ -41,7 +41,7 @@ public:
 
 	/*burnt trees/number of all trees*/
 	double p_fract;
-	int extinction_time;
+	double extinction_time;
 
 	int forest_dimension;
 
@@ -55,7 +55,7 @@ public:
 	/*defines forest*/
 	root **forest;
 
-	int time_step;
+	double time_step;
 };
 
 #endif /* FOREST_H_ */

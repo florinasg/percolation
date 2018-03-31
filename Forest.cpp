@@ -19,7 +19,6 @@ Forest::Forest(int dimension) :  forest_dimension(dimension),root_row(0), time_s
 {
 
 	/*IMPORTANT INITIALIZATIONS*/
-	time_step = 1;
 
 	p_fract = 0;
 
@@ -38,6 +37,7 @@ Forest::~Forest() {
 int Forest::grow_Forest(double new_tree_prob)
 {
 
+	time_step = 1;
 
 	/*standard way to create 2dim array with new*/
 	forest = new root*[forest_dimension];
@@ -323,10 +323,18 @@ int Forest::export_Forest(int mode)
 	}
 
 
+	/*MONTE CARLO -> STANDARD*/
 	else if(mode == 3)
 	{
-		forest_file.open("p_rho_extT_"+std::to_string(forest_dimension)+".csv",std::fstream::app);
+		forest_file.open("p_rho_extT_MONTECARLO_"+std::to_string(forest_dimension)+".csv",std::fstream::app);
 		forest_file<<tree_prob<<","<<p_fract<<","<<extinction_time<<"\n";
+	}
+
+	/*FOR FINDING p_c with tree density -> rho()*/
+	else if(mode == 4)
+	{
+		forest_file.open("rho(L)_"+std::to_string(tree_prob)+".csv",std::fstream::app);
+				forest_file<<forest_dimension<<","<<p_fract<<","<<extinction_time<<"\n";
 	}
 
 	forest_file.close();

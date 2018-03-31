@@ -10,7 +10,7 @@
 #include <stdint.h>
 #include <random>
 #include <vector>
-#include "forest.h"
+#include "./Forest.h"
 #include <iostream>
 
 
@@ -45,13 +45,17 @@ int main(int args, char * argv[])
 	else if(atoi(argv[1])== 1)
 	{
 
-		for(double tree_prob = 0.45; tree_prob<=0.65; tree_prob=tree_prob+0.01)
+		for(double tree_prob = 0.58; tree_prob<=0.61; tree_prob=tree_prob+0.01)
 		{
-			for(int dimension = 100; dimension <= 10000;dimension = dimension+100)
+			for(int dimension = 100; dimension <= 1000;dimension = dimension+100)
 			{
 				Forest *myForest = new Forest(dimension);
-				myForest->grow_Forest(tree_prob);
-				myForest->iginte_Forest();
+				for(int monte_carlo  = 0; monte_carlo <= dimension+1; monte_carlo++)
+				{
+					myForest->grow_Forest(tree_prob);
+					myForest->iginte_Forest();
+				}
+				myForest->export_Forest(4);
 				delete myForest;
 			}
 		}
