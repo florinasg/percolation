@@ -26,13 +26,13 @@ int main(int args, char * argv[])
 		{
 
 			Forest *myForest = new Forest(FOREST_L);
-			for(int monte_carlo  = 0; monte_carlo <= FOREST_L+1; monte_carlo++)
-			{
+//			for(int monte_carlo  = 0; monte_carlo <= FOREST_L+1; monte_carlo++)
+//			{
 				myForest->grow_Forest(tree_prob);
 				myForest->iginte_Forest();
 
-			}
-			std::cout << "Probability (Monte Carlo): " << tree_prob << "-> p: " << std::to_string(myForest->p_fract) << " Extincion_time (Monte Carlo): " << std::to_string(myForest->time_step)<<std::endl;
+	//		}
+		//	std::cout << "Probability (Monte Carlo): " << tree_prob << "-> p: " << myForest->p_fract << " Extincion_time (Monte Carlo): " << myForest->time_step <<std::endl;
 
 			myForest->export_Forest(3);
 			delete myForest;
@@ -55,6 +55,7 @@ int main(int args, char * argv[])
 					myForest->grow_Forest(tree_prob);
 					myForest->iginte_Forest();
 				}
+				std::cout << "DIMENSION " << dimension << "...done\n";
 				myForest->export_Forest(4);
 				delete myForest;
 			}

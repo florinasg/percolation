@@ -52,6 +52,7 @@ public:
 	double p;
 
 	int root_row;
+
 	/*defines forest*/
 	root **forest;
 
