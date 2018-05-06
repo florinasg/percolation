@@ -41,6 +41,8 @@ int Forest::grow_Forest(double new_tree_prob)
 
 	number_of_burnt_trees = 0;
 
+	number_of_trees = 0;
+
 
 	/*standard way to create 2dim array with new*/
 	forest = new root*[forest_dimension];
@@ -60,7 +62,7 @@ int Forest::grow_Forest(double new_tree_prob)
 
 	tree_prob = new_tree_prob;
 
-	/*random number generator TODO: TEST!!*/
+	/*random number generator*/
 	std::default_random_engine generator;
 	generator.seed(time(NULL));
 	std::uniform_real_distribution<double> distribution(0,1);
@@ -81,9 +83,7 @@ int Forest::grow_Forest(double new_tree_prob)
 			}
 		}
 	}
-
 	//this->export_Forest(1);
-
 	return 0;
 }
 
@@ -96,13 +96,13 @@ int Forest::iginte_Forest()
 
 
 
-	/*keeps track of burning trees*/
+	/* Keeps track of burning trees */
 	int number_burning_trees = 0;
 
 
 
 
-	/*ignite first row of forest */
+	/* Ignite first row of forest */
 	for(jdx = 0; jdx<forest_dimension; jdx++)
 	{
 		if(forest[idx][jdx].tree)
@@ -118,7 +118,7 @@ int Forest::iginte_Forest()
 	do
 	{
 
-		/*covers all rows except the last one*/
+		/*Covers all rows except the last one*/
 		for(idx = 0; idx < forest_dimension-1; idx++)
 		{
 
@@ -237,12 +237,12 @@ int Forest::iginte_Forest()
 	//this->export_Forest(0);
 
 	/*TODO extinction time line must maybe replaced due to */
-	std::cout << "Single Values: " << number_of_burnt_trees/number_of_trees << " " << time_step << std::endl;
+	//std::cout << "Single Values: " << number_of_burnt_trees/number_of_trees << " " << time_step << std::endl;
 
-//	extinction_time = extinction_time +time_step/(forest_dimension+1);
-//	p_fract = p_fract + (number_of_burnt_trees/number_of_trees)/(forest_dimension+1);
-//
-//	std::cout << "Monte Carlo Step: " << p_fract << " " << extinction_time << std::endl;
+	extinction_time = extinction_time +time_step/(forest_dimension+1);
+	p_fract = p_fract + (number_of_burnt_trees/number_of_trees)/(forest_dimension+1);
+
+	//std::cout << "Monte Carlo Step: " << p_fract << " " << extinction_time << std::endl;
 
 
 
