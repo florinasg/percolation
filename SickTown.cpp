@@ -7,25 +7,37 @@
 
 #include "SickTown.h"
 #include <algorithm>
+#include <time.h>
 
-SickTown::SickTown() {
-	// TODO Auto-generated constructor stub
 
-}
 
 SickTown::~SickTown() {
 	// TODO Auto-generated destructor stub
 }
 
 
-SickTown::SickTown(int city_dimension)
+SickTown::SickTown(int city_dimension, double infection_probability, double mutation_probabilty, double immunization_factor)
 {
 
 	City_Dimension = city_dimension;
 
+	Infection_Probability = infection_probability;
+
+	Mutation_Probability = mutation_probabilty;
+
+
+	distribution_prob = new std::uniform_real_distribution<double> (0,1);
+	distribution_mutation = new std::uniform_int_distribution<int> (1,100);
+
+	generator.seed(time(NULL));
+
+
+
+
+
 	Time_Step = 0;
 
-	/*Defines Town with standar initialization
+	/*Defines Town with standard initialization
 	 * for each individual*/
 	town = new human*[city_dimension];
 	for(int i = 0; i < city_dimension; ++i) {
@@ -37,6 +49,7 @@ SickTown::SickTown(int city_dimension)
 		for(int jdx = 0; jdx < city_dimension; jdx ++)
 		{
 			town[idx][jdx] = human();
+			town[idx][jdx].Immunization_Factor = immunization_factor;
 		}
 	}
 
@@ -86,6 +99,10 @@ int SickTown::EPIDEMIC_SPREADING()
 
 	int idx = -1;
 	int jdx = -1;
+	int jdx_left = -1;
+	int jdx_right = -1;
+	int idx_up = -1;
+	int idx_bottom = -1;
 
 
 	/*Infection:
@@ -94,16 +111,18 @@ int SickTown::EPIDEMIC_SPREADING()
 	{
 		/*Default Allocation*/
 		idx = i;
+		idx_bottom = i+1;
+		idx_up = i-1;
 
 		if(i == 0)
 		{
-
+			idx_up = City_Dimension - 1;
 		}
 
 		/*Boundary Condition*/
 		else if(i == City_Dimension-1)
 		{
-
+			idx_bottom = 0;
 		}
 
 
@@ -116,13 +135,13 @@ int SickTown::EPIDEMIC_SPREADING()
 			/*Boundary Condition*/
 			if(j == 0)
 			{
-
+				jdx_left = City_Dimension -1;
 			}
 
 			/*Boundary Condition*/
 			else if(j == City_Dimension-1)
 			{
-
+				jdx_right = 0;
 			}
 
 			if(town[idx][jdx].health_state == ill)
@@ -130,21 +149,26 @@ int SickTown::EPIDEMIC_SPREADING()
 
 
 				/*RIGHT NEIGHBOUR*/
-				town[idx][jdx+1].pathogen_mutations.
+				town[idx][jdx_right].pathogen_mutations.
 				push_back(town[idx][jdx].pathogen_mutations.back());
+				town[idx][jdx_right].health_state = infection_risk;
 
 				/*LEFT NEIGHBOUR*/
-				town[idx][jdx-1].pathogen_mutations.
+				town[idx][jdx_left].pathogen_mutations.
 				push_back(town[idx][jdx].pathogen_mutations.back());
+				town[idx][jdx_left].health_state = infection_risk;
 
 
 				/*UPPER NEIGHBOUR*/
-				town[idx-1][jdx].pathogen_mutations.
+				town[idx_up][jdx].pathogen_mutations.
 				push_back(town[idx][jdx].pathogen_mutations.back());
+				town[idx_up][jdx].health_state = infection_risk;
+
 
 				/*BOTTOM NEIGHBOUR*/
-				town[idx+1][jdx].pathogen_mutations.
+				town[idx_bottom][jdx].pathogen_mutations.
 				push_back(town[idx][jdx].pathogen_mutations.back());
+				town[idx_bottom][jdx].health_state = infection_risk;
 
 
 			}
@@ -155,7 +179,72 @@ int SickTown::EPIDEMIC_SPREADING()
 
 
 
+	/*FUN TIME
+	 * */
+	for(int idx = 0; idx < City_Dimension; idx ++)
+	{
+		for(int jdx = 0; jdx < City_Dimension; jdx ++)
+		{
 
+			if(town[idx][jdx].health_state==infection_risk)
+			{
+
+				/*If human is not infected with pathogen_mutation
+				 *
+				 *
+				 * TODO: VERIFY, might very likely fail !!!*/
+				if(std::find(town[idx][jdx].pathogen_mutations.begin(),
+						town[idx][jdx].pathogen_mutations.end()-1,
+						town[idx][jdx].pathogen_mutations.back()) !=
+								town[idx][jdx].pathogen_mutations.end())
+				{
+					if(distribution_prob(generator) <= Infection_Probability)
+					{
+
+						/*MUTATION*/
+
+
+
+
+
+						town[idx][jdx].health_state = ill;
+						town[idx][jdx].infection_time_step = Time_Step;
+
+					}
+
+				}
+
+
+				/* Human was previously infected with pathogen_mutation
+				 * */
+				else
+				{
+					if(distribution_prob(generator) <=
+							(Infection_Probability*town[idx][jdx].Immunization_Factor))
+					{
+
+
+						/*MUTATION*/
+
+						town[idx][jdx].health_state = ill;
+						town[idx][jdx].infection_time_step = Time_Step;
+
+					}
+
+
+				}
+
+
+			}
+
+
+
+		}
+	}
+
+
+	/*Increments Monte-Carlo-Step*/
+	Time_Step++;
 
 
 	return 0;

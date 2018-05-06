@@ -16,7 +16,9 @@
 
 #define FOREST_L 1000
 #define	TOWN_L 1000
-
+#define MUT_MAX 100
+#define MUT_PROB 0.0
+#define IMM_L 0.0
 
 
 int main(int args, char * argv[])
@@ -73,7 +75,7 @@ int main(int args, char * argv[])
 	}
 
 
-	/*Simulates infected town*/
+	/*Simulates Infected Town*/
 	else if(atoi(argv[1]) == 1)
 	{
 
@@ -81,6 +83,9 @@ int main(int args, char * argv[])
 
 
 	}
+
+
+	else {return 0;}
 
 	return 0;
 }
