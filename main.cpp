@@ -11,6 +11,7 @@
 #include <random>
 #include <vector>
 #include "./Forest.h"
+#include "SickTown.h"
 #include <iostream>
 
 
@@ -78,10 +79,30 @@ int main(int args, char * argv[])
 	/*Simulates Infected Town*/
 	else if(atoi(argv[1]) == 1)
 	{
+		SickTown *myTown;
+		print("Infected Town Simulation started...\n");
 
+		for(double inf = 0.1; inf <=1; inf = inf +0.1)
+		{
 
+			for(double imm = 0; imm <=1; imm=imm+0.5)
+			{
+				/*args=[Town Dimension, infection probability, mutation probability
+				 * immunity factor]*/
+				myTown = new SickTown(TOWN_L,inf,0,imm);
+				myTown->INFECT_TOWN();
 
+				/*MONTE CARLO STEPS*/
+				for(int i = 0; i < 100000; i++)
 
+				{
+					myTown->EPIDEMIC_SPREADING();
+
+				}
+			}
+
+			delete myTown;
+		}
 	}
 
 
