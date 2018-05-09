@@ -238,6 +238,7 @@ int SickTown::EPIDEMIC_SPREADING()
 			int mutation_prob = (*distribution_mutation)(generator); /*Denotes a random number which
 			represents a random mutation*/
 
+			bool new_mutation_check = false;
 
 			if(town[idx][jdx].health_state==infection_risk)
 			{
@@ -268,21 +269,32 @@ int SickTown::EPIDEMIC_SPREADING()
 						if(prob <= Mutation_Probability )
 						{
 
+							/*Mutation back to initial state if > MUT_MAX*/
 							if(town[idx][jdx].pathogen_mutations.size() >= double(MUT_MAX))
 							{
 								town[idx][jdx].pathogen_mutations.clear();
-								town[idx][jdx].pathogen_mutations.push_back(int(0))
+								town[idx][jdx].pathogen_mutations.push_back(int(0));
 
 							}
 							else
 							{
-								if(std::find(town[idx][jdx].pathogen_mutations.begin(),town[idx][jdx].pathogen_mutations.end(),
-										mutation_prob) == town[idx][jdx].pathogen_mutations.end())
+								/*never mutation into alreday infected-with pathogen mutation*/
+								do
 								{
+									if(std::find(town[idx][jdx].pathogen_mutations.begin(),town[idx][jdx].pathogen_mutations.end(),
+											mutation_prob) == town[idx][jdx].pathogen_mutations.end())
+									{
 
-									town[idx][jdx].pathogen_mutations.push_back(int(mutation_prob));
+										town[idx][jdx].pathogen_mutations.push_back(int(mutation_prob));
+										new_mutation_check = true;
 
-								}
+									}
+
+									else
+									{
+										mutation_prob = (*distribution_mutation)(generator);
+									}
+								}while(!new_mutation_check);
 							}
 						}
 
@@ -327,15 +339,28 @@ int SickTown::EPIDEMIC_SPREADING()
 							if(town[idx][jdx].pathogen_mutations.size() >= double(MUT_MAX))
 							{
 								town[idx][jdx].pathogen_mutations.clear();
-								town[idx][jdx].pathogen_mutations.push_back(int(0))
+								town[idx][jdx].pathogen_mutations.push_back(int(0));
 
 							}
 
 							else
 							{
-								/*pushes the new mutation into the mutations-vector*/
-								town[idx][jdx].pathogen_mutations.push_back(int(
-										mutation_prob));
+								do
+								{
+									if(std::find(town[idx][jdx].pathogen_mutations.begin(),town[idx][jdx].pathogen_mutations.end(),
+											mutation_prob) == town[idx][jdx].pathogen_mutations.end())
+									{
+
+										town[idx][jdx].pathogen_mutations.push_back(int(mutation_prob));
+										new_mutation_check = true;
+
+									}
+
+									else
+									{
+										mutation_prob = (*distribution_mutation)(generator);
+									}
+								}while(!new_mutation_check);
 							}
 						}
 

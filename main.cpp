@@ -17,22 +17,21 @@
 
 
 /*Important Constants for use in Simulation*/
-#define FOREST_L 1000
-#define	TOWN_L 100000
-#define MUT_MAX 100
-#define MUT_PROB 0.0
-#define IMM_L 0.0
+#define FOREST_L 200 /*Forest Dimension*/
+#define	TOWN_L 1000 /*Town Dimension*/
+
 
 
 int main(int args, char * argv[])
 {
 
-	/*Simulates Burning Forest*/
-	if(argv[1] == 0)
+	/*Simulates Burning Forest for different tree densities*/
+	if(atoi(argv[1]) == 0)
 	{
 
 		if(atoi(argv[2])==0)
 		{
+			/*calculates */
 			for(double tree_prob = 0.01; tree_prob<=1.00; tree_prob=tree_prob+0.01)
 			{
 
@@ -53,12 +52,14 @@ int main(int args, char * argv[])
 
 		}
 
-		/*finite -> infinite*/
+		/*finite -> infinite (does not really work but implementation should be correct)
+		 * checks where the burnt tree density scales like forest dimension*/
 		else if(atoi(argv[2])== 1)
 		{
 
 			for(double tree_prob = 0.59; tree_prob<=0.61; tree_prob=tree_prob+0.001)
 			{
+				/*Calculation for tree dimensions 100-500 -> RUNTIME*/
 				for(int dimension = 100; dimension <= 500;dimension = dimension+100)
 				{
 					Forest *myForest = new Forest(dimension);
