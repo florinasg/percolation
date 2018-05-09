@@ -10,6 +10,7 @@
 #include <time.h>
 
 
+#define MUT_MAX 1000
 
 SickTown::~SickTown() {
 	// TODO Auto-generated destructor stub
@@ -25,7 +26,7 @@ SickTown::SickTown(int city_dimension, double infection_probability, double muta
 			immunization_factor)+",lambda="+std::to_string(mutation_probabilty)+").csv");
 
 
-	//test.open("TEST.csv");
+	/*Table Information*/
 	file << "time step,phi_1,phi_2\n";
 
 	City_Dimension = city_dimension;
@@ -35,17 +36,16 @@ SickTown::SickTown(int city_dimension, double infection_probability, double muta
 	Mutation_Probability = mutation_probabilty;
 
 
+
 	distribution_prob = new std::uniform_real_distribution<double> (0,1);
 	distribution_mutation = new std::uniform_int_distribution<int> (1,100);
 
 	generator.seed(time(NULL));
 
 
-
+	/*Default Initializations*/
 	phi_1=0;
 	phi_2=0;
-
-
 	Time_Step = 1;
 
 	/*Defines Town with standard initialization
@@ -82,7 +82,7 @@ int SickTown::INFECT_TOWN()
 
 
 
-	/*TODO: TEST & VERIFY 12:24 ETC+1*/
+
 	for(int i = 0; i< ((City_Dimension*City_Dimension)/100); i ++)
 	{
 		/*generates random lattice index*/
@@ -103,14 +103,14 @@ int SickTown::INFECT_TOWN()
 			town[idx][jdx].infection_time_step = 0;
 			town[idx][jdx].pathogen_mutations.push_back(int(0));
 			town[idx][jdx].infected_pathogen_mutation.push_back(int(0));
+
 			/*pushes lattice index into vector
-			 * in order to not use it twice*/
+			 * in order to not use it twice for new-infection*/
 			arr_rand_infect_idx.push_back(int(rand_infect_idx));
 
 
 			phi_1++;
 			phi_2++;
-
 			humans_sick_ ++;
 
 
@@ -141,7 +141,10 @@ int SickTown::EPIDEMIC_SPREADING()
 	bool container_check = false;
 
 
-
+	/*this loop stores the healthstes of the humans
+	 * -> in case of getting in the risk of an infection AND not being
+	 * infected in the end, the previous helth state is restored
+	 * -> avoids double caounting ill people*/
 	for(int i = 0; i< City_Dimension; i++)
 	{
 		for(int j = 0; j < City_Dimension; j++)
@@ -154,7 +157,7 @@ int SickTown::EPIDEMIC_SPREADING()
 	 * -> periodic boundary conditions*/
 	for(int i = 0; i < City_Dimension; i++)
 	{
-		/*Default Allocation*/
+		/*Default Allocation of help indices*/
 		idx = i;
 		idx_bottom = i+1;
 		idx_up = i-1;
@@ -174,7 +177,7 @@ int SickTown::EPIDEMIC_SPREADING()
 		for(int j = 0; j < City_Dimension; j++)
 		{
 
-			/*Default Allocation*/
+			/*Default Allocation of help indices*/
 			jdx = j;
 			jdx_right = j+1;
 			jdx_left = j-1;
@@ -221,29 +224,36 @@ int SickTown::EPIDEMIC_SPREADING()
 	}
 
 
-	/*FUN TIME
-	 * */
+	/* INFECTION OR NOT */
+
 	for(int idx = 0; idx < City_Dimension; idx ++)
 	{
 		for(int jdx = 0; jdx < City_Dimension; jdx ++)
 		{
 
-			/*careful with function pointer*/
+			/*Random doubles are generate in order to compare them
+			 * with defined magnitudes which leads to certain
+			 * actions*/
 			double prob = (*distribution_prob)(generator);
-			double mutation_prob = (*distribution_mutation)(generator);
+			int mutation_prob = (*distribution_mutation)(generator); /*Denotes a random number which
+			represents a random mutation*/
 
 
 			if(town[idx][jdx].health_state==infection_risk)
 			{
 
 
+				/*Checks whether newly exposed-to mutation has already been
+				 * overcome before by the patient */
 				if(std::find(town[idx][jdx].recovered_pathogen_mutation.begin(),
 						town[idx][jdx].recovered_pathogen_mutation.end(),
-						town[idx][jdx].pathogen_mutations.back()) == /*Equality or INequality???*/
+						town[idx][jdx].pathogen_mutations.back()) == /* NB! Equality Required*/
 								town[idx][jdx].recovered_pathogen_mutation.end())
 				{
 					container_check = true;
 				}
+
+
 				/*If human was not INFECTED with pathogen_mutation previously
 				 * -> .recovered_pathogen_mutation vector does not contain recently aquired pathogen*/
 				if(container_check)
@@ -251,23 +261,37 @@ int SickTown::EPIDEMIC_SPREADING()
 					if(prob <= Infection_Probability)
 					{
 
+						/*Random number for likelihood that pathogen mutates*/
 						prob = (*distribution_prob)(generator);
 
 						/*Possible MUTATION*/
 						if(prob <= Mutation_Probability )
 						{
-							town[idx][jdx].pathogen_mutations.push_back(int(
-									mutation_prob));
+
+							if(town[idx][jdx].pathogen_mutations.size() >= double(MUT_MAX))
+							{
+								town[idx][jdx].pathogen_mutations.clear();
+								town[idx][jdx].pathogen_mutations.push_back(int(0))
+
+							}
+							else
+							{
+								if(std::find(town[idx][jdx].pathogen_mutations.begin(),town[idx][jdx].pathogen_mutations.end(),
+										mutation_prob) == town[idx][jdx].pathogen_mutations.end())
+								{
+
+									town[idx][jdx].pathogen_mutations.push_back(int(mutation_prob));
+
+								}
+							}
 						}
 
 
 						town[idx][jdx].health_state = ill;
 
-						//std::cout << int(town[idx][jdx].
-						//		pathogen_mutations.back()) <<std::endl;
+
 						town[idx][jdx].infected_pathogen_mutation.push_back(int(town[idx][jdx].
 								pathogen_mutations.back()));
-						//std::cout << int(town[idx][jdx].infected_pathogen_mutation.back()) <<std::endl;
 						town[idx][jdx].infection_time_step = Time_Step;
 						if(town[idx][jdx].previous_health_state != SickTown::ill)
 						{
@@ -295,20 +319,32 @@ int SickTown::EPIDEMIC_SPREADING()
 					{
 
 
-						/*Possible MUTATION*/
+						/*Possible MUTATION is determined here*/
 						prob = (*distribution_prob)(generator);
 						if(prob<= Mutation_Probability )
 						{
-							town[idx][jdx].pathogen_mutations.push_back(int(
-									mutation_prob));
+							/*Pathogen Mutates Back when MUT_MAX is reached*/
+							if(town[idx][jdx].pathogen_mutations.size() >= double(MUT_MAX))
+							{
+								town[idx][jdx].pathogen_mutations.clear();
+								town[idx][jdx].pathogen_mutations.push_back(int(0))
+
+							}
+
+							else
+							{
+								/*pushes the new mutation into the mutations-vector*/
+								town[idx][jdx].pathogen_mutations.push_back(int(
+										mutation_prob));
+							}
 						}
 
 
 						town[idx][jdx].health_state = ill;
-						/*TODO: Check whether pathogen mutation leads to infection or ITS predecessor*/
 						town[idx][jdx].infected_pathogen_mutation.push_back(int(town[idx][jdx].
 								pathogen_mutations.back()));
 						town[idx][jdx].infection_time_step = Time_Step;
+
 						/*Increases counters ONLY if human was not already sick before
 						 * -> COUNTS ONLY humans that were sane before*/
 						if(town[idx][jdx].previous_health_state != SickTown::ill)
@@ -337,7 +373,7 @@ int SickTown::EPIDEMIC_SPREADING()
 
 
 
-
+	/*Test Output*/
 	//print("humans_sick_this_time_step_before_recovery: ",humans_sick_,"\n");
 
 
@@ -351,7 +387,7 @@ int SickTown::EPIDEMIC_SPREADING()
 		{
 			test << town[idx][jdx].health_state <<   ",";
 
-			/*Recover if ILL due to an infection during the last time-step*/
+			/*Recover if ILL due to an infection during the LAST time-step*/
 			if((town[idx][jdx].health_state == ill) && (town[idx][jdx].infection_time_step == Time_Step-1))
 			{
 				town[idx][jdx].health_state = recovered;
@@ -371,12 +407,16 @@ int SickTown::EPIDEMIC_SPREADING()
 	}
 
 
+	/*Test Output*/
 	//print("humans_recovered_this_time_step: ",humans_recovered_,"\n");
+
+	/*Averaged Magnitudes*/
 	double phi_1_print = phi_1 / (City_Dimension*City_Dimension);
 
 	double phi_2_print = phi_2 / (City_Dimension*City_Dimension);
 
 
+	/*File Output*/
 	file << Time_Step << "," << phi_1_print << "," << phi_2_print << "\n";
 
 	/*Increments Formal Monte-Carlo-Step*/

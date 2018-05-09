@@ -37,6 +37,7 @@ Forest::~Forest() {
 int Forest::grow_Forest(double new_tree_prob)
 {
 
+	/*Initilizes Variable*/
 	time_step = 1;
 
 	number_of_burnt_trees = 0;
@@ -44,7 +45,7 @@ int Forest::grow_Forest(double new_tree_prob)
 	number_of_trees = 0;
 
 
-	/*standard way to create 2dim array with new*/
+	/*Allocates 2-dim array of type root*/
 	forest = new root*[forest_dimension];
 	for(int i = 0; i < forest_dimension; ++i) {
 		forest[i] = new root[forest_dimension];
@@ -62,7 +63,7 @@ int Forest::grow_Forest(double new_tree_prob)
 
 	tree_prob = new_tree_prob;
 
-	/*random number generator*/
+	/*random number generator for growing forest*/
 	std::default_random_engine generator;
 	generator.seed(time(NULL));
 	std::uniform_real_distribution<double> distribution(0,1);
@@ -72,7 +73,7 @@ int Forest::grow_Forest(double new_tree_prob)
 	{
 		for(int jdx = 0; jdx < forest_dimension; jdx++)
 		{
-			/*number between */
+			/*tree_or_not desrribes*/
 			tree_or_not = distribution(generator);
 			if(tree_or_not <= tree_prob)
 			{
@@ -114,7 +115,6 @@ int Forest::iginte_Forest()
 		}
 	}
 
-	/*TODO: IMPLEMENT BOUNDARY CONDITIONS*/
 	do
 	{
 
@@ -126,7 +126,8 @@ int Forest::iginte_Forest()
 
 			for(jdx = 0; jdx < forest_dimension; jdx++)
 			{
-				/*denotes the tree to the RIGHT of the current tree*/
+				/*denotes the tree to the RIGHT of the current tree
+				 * -> Important for Boundary Conditions*/
 				jdx_T = jdx+1;
 				if(jdx==forest_dimension-1)
 					jdx_T = 0;
@@ -223,9 +224,9 @@ int Forest::iginte_Forest()
 			}
 		}
 
+		/*Can be used to export forest @ this state*/
 		//this->export_Forest(2);
 
-		//std::cout<< forest_dimension <<" time_Step: " << time_step << " number of burning trees: " << number_burning_trees<< std::endl;
 
 		/*Increases Time Step*/
 		time_step = time_step +1;
@@ -233,19 +234,16 @@ int Forest::iginte_Forest()
 	} while(number_burning_trees > 0);
 
 
-	/*writes burned forest to file*/
-	//this->export_Forest(0);
 
-	/*TODO extinction time line must maybe replaced due to */
-	//std::cout << "Single Values: " << number_of_burnt_trees/number_of_trees << " " << time_step << std::endl;
 
+	/*Computer Important Magnitudes*/
 	extinction_time = extinction_time +time_step/(forest_dimension+1);
 	p_fract = p_fract + (number_of_burnt_trees/number_of_trees)/(forest_dimension+1);
 
-	//std::cout << "Monte Carlo Step: " << p_fract << " " << extinction_time << std::endl;
 
 
 
+	/*Delete Forest 2D-array*/
 	for(int i = 0; i < forest_dimension; ++i) {
 		delete [] forest[i];
 	}
@@ -325,7 +323,6 @@ int Forest::export_Forest(int mode)
 		}
 
 	}
-
 
 	/*MONTE CARLO -> STANDARD*/
 	else if(mode == 3)

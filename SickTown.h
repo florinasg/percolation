@@ -81,6 +81,8 @@ private:
 
 	int Time_Step;
 
+	std::vector<int> occured_mutations;
+
 	std::uniform_real_distribution<double> *distribution_prob;
 	std::uniform_int_distribution<int> *distribution_mutation;
 	std::default_random_engine generator;

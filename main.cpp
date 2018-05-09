@@ -15,8 +15,10 @@
 #include <iostream>
 
 
+
+/*Important Constants for use in Simulation*/
 #define FOREST_L 1000
-#define	TOWN_L 1000
+#define	TOWN_L 100000
 #define MUT_MAX 100
 #define MUT_PROB 0.0
 #define IMM_L 0.0
@@ -35,6 +37,7 @@ int main(int args, char * argv[])
 			{
 
 				Forest *myForest = new Forest(FOREST_L);
+				/*Monte Carlo Step*/
 				for(int monte_carlo  = 0; monte_carlo <= FOREST_L+1; monte_carlo++)
 				{
 					myForest->grow_Forest(tree_prob);

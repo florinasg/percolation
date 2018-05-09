@@ -53,7 +53,7 @@ public:
 
 	int root_row;
 
-	/*defines forest*/
+	/*defines forest to be burnt to the ground*/
 	root **forest;
 
 	double time_step;
